@@ -8,4 +8,11 @@
     <button type="submit">Delete Task</button>
 </form>
 <a href="{{ url_for('edit_task', task_id=task.id) }}">Edit Task</a>
+{% if not task.completed %}
+    <form method="post" action="{{ url_for('complete_task', task_id=task.id) }}">
+        <button type="submit">Mark as Complete</button>
+    </form>
+{% else %}
+    <p>This task is completed.</p>
+{% endif %}
 

@@ -127,3 +127,27 @@ def edit_profile():
         form.username.data = current_user.username
         form.email.data = current_user.email
     return render_template('edit_profile.html', title='Edit Profile', form=form)
+
+@app.route('/task/<int:task_id>/complete', methods=['POST'])
+@login_required
+def complete_task(task_id):
+    task = Task.query.get_or_404(task_id)
+    if task.user_id != current_user.id:
+        abort(403)
+    task.completed = True
+    db.session.commit()
+    flash('Task marked as complete.')
+    return redirect(url_for('index'))
+
+@app.route('/tasks/filter')
+@login_required
+def filter_tasks():
+    status = request.args.get('status')
+    if status == 'completed':
+        tasks = Task.query.filter_by(user_id=current_user.id, completed=True).all()
+    elif status == 'pending':
+        tasks = Task.query.filter_by(user_id=current_user.id, completed=False).all()
+    else:
+        tasks = Task.query.filter_by(user_id=current_user.id).all()
+    return render_template('index.html', title='Filtered Tasks', tasks=tasks)
+
