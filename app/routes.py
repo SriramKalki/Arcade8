@@ -4,6 +4,9 @@ from app.forms import RegistrationForm, LoginForm
 from app.models import User
 from flask_login import current_user, login_user, logout_user, login_required
 from werkzeug.urls import url_parse
+from datetime import datetime
+from app.forms import TaskForm
+from app.models import Task
 
 @app.route('/register', methods=['GET', 'POST'])
 def register():
@@ -40,3 +43,17 @@ def login():
 def logout():
     logout_user()
     return redirect(url_for('index'))
+
+@app.route('/task/new', methods=['GET', 'POST'])
+@login_required
+def new_task():
+    form = TaskForm()
+    if form.validate_on_submit():
+        task = Task(title=form.title.data, description=form.description.data,
+                    due_date=form.due_date.data, user_id=current_user.id)
+        db.session.add(task)
+        db.session.commit()
+        flash('Your task has been created!')
+        return redirect(url_for('index'))
+    return render_template('create_task.html', title='New Task', form=form)
+    
