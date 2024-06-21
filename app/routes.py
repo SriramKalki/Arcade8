@@ -56,4 +56,18 @@ def new_task():
         flash('Your task has been created!')
         return redirect(url_for('index'))
     return render_template('create_task.html', title='New Task', form=form)
-    
+
+@app.route('/')
+@app.route('/index')
+@login_required
+def index():
+    tasks = Task.query.filter_by(user_id=current_user.id).all()
+    return render_template('index.html', title='Home', tasks=tasks)
+
+@app.route('/task/<int:task_id>')
+@login_required
+def task(task_id):
+    task = Task.query.get_or_404(task_id)
+    if task.user_id != current_user.id:
+        abort(403)
+    return render_template('task.html', title=task.title, task=task)
