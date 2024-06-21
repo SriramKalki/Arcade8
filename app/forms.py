@@ -32,3 +32,9 @@ class TaskForm(FlaskForm):
     description = TextAreaField('Description')
     due_date = DateTimeField('Due Date', format='%Y-%m-%d %H:%M:%S')
     submit = SubmitField('Add Task')
+
+class EditProfileForm(FlaskForm):
+    username = StringField('Username', validators=[DataRequired()])
+    email = StringField('Email', validators=[DataRequired(), Email()])
+    submit = SubmitField('Update')
+
